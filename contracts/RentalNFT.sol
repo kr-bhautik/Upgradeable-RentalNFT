@@ -28,4 +28,12 @@ contract RentalNFT is Initializable, ERC4907Upgradable, OwnableUpgradeable {
     {
         return super.supportsInterface(_interfaceId);
     }
+
+    // Upgraded functionality.
+    function transferFrom(address from, address to, uint256 tokenId) public override {
+        require(users[tokenId].expires <= block.timestamp, "Tokens are on Rent. Can't transfer.");
+        super.transferFrom(from, to, tokenId);
+        delete users[tokenId];
+        emit UpdateUser(tokenId, users[tokenId].user, uint64(users[tokenId].expires));
+    }
 }
